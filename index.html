@@ -17,30 +17,29 @@
 
       try {
         const response = await fetch(
-          "./current-url.json?v=" + Date.now(),
+          "/current-url.json?v=" + Date.now(),
           { cache: "no-store" }
         );
 
-        if (!response.ok) {
-          throw new Error("URL unavailable");
-        }
+        if (!response.ok) throw new Error("URL unavailable");
 
         const data = await response.json();
 
-        if (
-          !data.url ||
-          !/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(data.url)
-        ) {
+        if (!data.url ||
+            !/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(data.url)) {
           throw new Error("Invalid hub address");
         }
 
-        status.textContent = "Redirecting to CYBER FOG HUB...";
+        const target = new URL(data.url);
+        target.pathname = location.pathname;
+        target.search = location.search;
+        target.hash = location.hash;
 
-        window.location.replace(data.url);
+        status.textContent = "Connecting...";
+        window.location.replace(target.href);
 
       } catch (error) {
-        status.textContent =
-          "Hub temporarily unavailable. Please try again later.";
+        status.textContent = "Hub temporarily unavailable. Please try again later.";
       }
     }
 
