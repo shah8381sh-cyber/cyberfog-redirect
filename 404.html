@@ -1,0 +1,44 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connecting — CYBER FOG HUB</title>
+</head>
+<body>
+  <p id="status">Connecting to CYBER FOG HUB...</p>
+  <script>
+    async function connect() {
+      try {
+        const response = await fetch(
+          "/current-url.json?v=" + Date.now(),
+          { cache: "no-store" }
+        );
+
+        if (!response.ok) throw new Error();
+
+        const data = await response.json();
+
+        if (!data.url ||
+            !/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(data.url)) {
+          throw new Error();
+        }
+
+        const target = new URL(data.url);
+        target.pathname = location.pathname;
+        target.search = location.search;
+        target.hash = location.hash;
+
+        location.replace(target.href);
+      } catch {
+        document.getElementById("status").textContent =
+          "Hub temporarily unavailable. Please try again.";
+      }
+    }
+
+    connect();
+  </script>
+</body>
+</html>
+```
