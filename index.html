@@ -1,0 +1,34 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CYBER FOG HUB</title>
+</head>
+<body>
+  <h2>CYBER FOG HUB</h2>
+  <p id="status">Connecting to the hub...</p>
+
+  <script>
+    fetch("./current-url.json")
+      .then(response => {
+        if (!response.ok) throw new Error("URL unavailable");
+        return response.json();
+      })
+      .then(data => {
+        if (!data.url ||
+            !/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(data.url)) {
+          throw new Error("Invalid hub address");
+        }
+        document.getElementById("status").textContent =
+          "Redirecting...";
+        location.replace(data.url);
+      })
+      .catch(() => {
+        document.getElementById("status").textContent =
+          "Hub temporarily unavailable. Please try again later.";
+      });
+  </script>
+</body>
+</html>
